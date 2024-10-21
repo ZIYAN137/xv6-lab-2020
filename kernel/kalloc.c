@@ -31,6 +31,20 @@ kinit()
 }
 
 void
+freebytes(uint64 *dst)
+{
+  *dst = 0;
+  struct run *p = kmem.freelist;
+
+  acquire(&kmem.lock);
+  while (p) {
+    *dst += PGSIZE;
+    p = p->next;
+  }
+  release(&kmem.lock);
+}
+
+void
 freerange(void *pa_start, void *pa_end)
 {
   char *p;
